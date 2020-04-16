@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { useCurrentAsset, useCurrentAssetActions } from '../../contexts/current-asset';
 import getAssetSize from '../../utils/get-asset-size';
 import CodeBlock from '../code-block';
@@ -52,10 +53,42 @@ function Pane() {
   const currentAsset = useCurrentAsset();
   const {
     copyHelper,
+    copyEmblemHelper,
     copySVG,
     copyCSS,
     downloadSVG,
   } = useCurrentAssetActions();
+  const [iconWidth, setIconWidth] = useState('');
+  const [iconTrimmed, setIconTrimmed] = useState(false);
+  const [currentAssetModified, setCurrentAssetModified] = useState({
+    helper: '',
+    helperEmblem: '',
+  });
+  useEffect(() => {
+    let customString = '';
+    let customStringEmblem = '';
+
+    if (iconWidth) {
+      customString += ` width=${iconWidth}`;
+      customStringEmblem += `width=${iconWidth}`;
+    }
+    if (iconTrimmed) {
+      customString += ' trimmed=true';
+      customStringEmblem += ' trimmed=true';
+    }
+    if (currentAsset) {
+      if (customString) {
+        customString += ' />';
+        setCurrentAssetModified({
+          ...currentAsset,
+          helper: `${currentAsset.helper}`.replace(' />', customString),
+          helperEmblem: `${currentAsset.helperEmblem} ${customStringEmblem}`,
+        });
+      } else {
+        setCurrentAssetModified(currentAsset);
+      }
+    }
+  }, [currentAsset, iconTrimmed, iconWidth]);
 
   if (!currentAsset) {
     return (
@@ -110,13 +143,46 @@ function Pane() {
       <section className="pane__section">
         <header className="pane__header">
           <h2 className="pane__title">
+            Customize
+          </h2>
+        </header>
+        <div className="pane__content">
+          <div className="input__group">
+            <label htmlFor="width" className="input__label">Width</label>
+            <input
+              id="width" className="input__field" value={iconWidth}
+              onChange={({ target }) => setIconWidth(target.value)}
+            />
+          </div>
+          <div className="input__group">
+            <input
+              type="checkbox"
+              id="scales"
+              name="scales"
+              checked={iconTrimmed}
+              onChange={() => setIconTrimmed((prevProp) => !prevProp)}
+            />
+            <label className="input__checkboxLabel" htmlFor="scales">
+              <div className={classNames('input__checkbox', {
+                'input__checkbox--checked': iconTrimmed,
+              })}
+              />
+              <span>Trim Icon</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section className="pane__section">
+        <header className="pane__header">
+          <h2 className="pane__title">
             Helper
           </h2>
 
           <button
             className="btn btn--small btn--primary"
             type="button"
-            onClick={copyHelper}
+            onClick={() => copyHelper(currentAssetModified)}
           >
             Copy
           </button>
@@ -124,7 +190,30 @@ function Pane() {
 
         <div className="pane__content">
           <CodeBlock
-            code={currentAsset.helper}
+            code={currentAssetModified.helper}
+            language="handlebars"
+          />
+        </div>
+      </section>
+
+      <section className="pane__section">
+        <header className="pane__header">
+          <h2 className="pane__title">
+            Emblem Helper
+          </h2>
+
+          <button
+            className="btn btn--small btn--primary"
+            type="button"
+            onClick={() => copyEmblemHelper(currentAssetModified)}
+          >
+            Copy
+          </button>
+        </header>
+
+        <div className="pane__content">
+          <CodeBlock
+            code={currentAssetModified.helperEmblem}
             language="handlebars"
           />
         </div>

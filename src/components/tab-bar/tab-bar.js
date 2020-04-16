@@ -2,12 +2,12 @@ import React from 'react';
 import { useDrawersActions } from '../../contexts/drawers';
 import TooltipButton from '../tooltip-button';
 import TooltipLink from '../tooltip-link';
-import { ReactComponent as Logo } from '../../images/logo.svg';
 import { ReactComponent as SettingsIcon } from '../../images/icons/settings.svg';
 import { ReactComponent as HelpIcon } from '../../images/icons/help.svg';
 import { ReactComponent as KeyboardIcon } from '../../images/icons/keyboard.svg';
 import { ReactComponent as GithubIcon } from '../../images/icons/github.svg';
 import './tab-bar.scss';
+import logo from '../../images/soxhub-icon.png';
 
 function TabBar() {
   const { toggleShortcuts } = useDrawersActions();
@@ -19,7 +19,10 @@ function TabBar() {
         to="https://svgjar.web.app/"
         label="Landing page"
       >
-        <Logo />
+        <img
+          src={logo} width="28" height="28"
+          alt="AuditBoard logo"
+        />
       </TooltipLink>
 
       <ul className="tab-bar__section">

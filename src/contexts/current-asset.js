@@ -50,10 +50,12 @@ function CurrentAssetProvider({ children }) {
   const actions = useMemo(() => ({
     setCurrentAsset,
 
-    copyHelper() {
-      if (asset.current) {
-        copyAndNotify(asset.current.helper, 'Helper');
-      }
+    copyHelper(currentAssetModified) {
+      copyAndNotify(currentAssetModified.helper, 'Helper');
+    },
+
+    copyEmblemHelper(currentAssetModified) {
+      copyAndNotify(currentAssetModified.helperEmblem, 'Emblem Helper');
     },
 
     copySVG() {
